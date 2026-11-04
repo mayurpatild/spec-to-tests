@@ -4,7 +4,7 @@ check:
   stage: check
   image: node:22
   script:
-    - npm ci
+    - npm install --no-audit --no-fund
     - npm run check
     - npx playwright install --with-deps chromium
     - npx playwright test

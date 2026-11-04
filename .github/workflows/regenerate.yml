@@ -17,8 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
+        with: { node-version: 22 }
+      - run: npm install --no-audit --no-fund
       - name: Generate
         run: npx tsx src/cli.ts generate --spec https://petstore3.swagger.io/api/v3/openapi.json --out tests/generated --tags pet,store ${{ inputs.force && '--force' || '' }}
       - name: Typecheck generated tests

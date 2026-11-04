@@ -1,0 +1,25 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Mini Orders API", "version": "1.2.0" },
+  "servers": [{ "url": "https://api.example.com" }],
+  "security": [{ "bearer": [] }],
+  "components": {
+    "securitySchemes": { "bearer": { "type": "http", "scheme": "bearer" } },
+    "schemas": {
+      "Order": { "type": "object", "required": ["id", "currency", "amount"], "properties": { "id": { "type": "string" }, "currency": { "type": "string", "enum": ["GBP", "USD", "EUR"] }, "amount": { "type": "number" }, "status": { "type": "string" } } },
+      "NewOrder": { "type": "object", "required": ["currency", "amount"], "properties": { "currency": { "type": "string", "enum": ["GBP", "USD", "EUR"] }, "amount": { "type": "number", "minimum": 0.01 } } },
+      "Problem": { "type": "object", "required": ["title", "status"], "properties": { "title": { "type": "string" }, "status": { "type": "integer" } } }
+    }
+  },
+  "paths": {
+    "/orders": {
+      "get": { "operationId": "listOrders", "tags": ["orders"], "summary": "List orders", "parameters": [{ "name": "status", "in": "query", "schema": { "type": "string" } }], "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Order" } } } } }, "401": { "description": "unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Problem" } } } } } },
+      "post": { "operationId": "createOrder", "tags": ["orders"], "summary": "Create an order", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewOrder" } } } }, "responses": { "201": { "description": "created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Order" } } } }, "400": { "description": "invalid", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Problem" } } } } } }
+    },
+    "/orders/{id}": {
+      "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+      "get": { "operationId": "getOrder", "tags": ["orders"], "responses": { "200": { "description": "ok", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Order" } } } }, "404": { "description": "missing", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Problem" } } } } } },
+      "delete": { "operationId": "deleteOrder", "tags": ["orders"], "responses": { "204": { "description": "deleted" }, "404": { "description": "missing" } } }
+    }
+  }
+}

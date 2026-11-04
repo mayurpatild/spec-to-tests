@@ -1,0 +1,32 @@
+{
+  "name": "spec-to-tests",
+  "version": "0.1.0",
+  "description": "Generate Playwright API tests from an OpenAPI spec with Claude, keep them in sync as the spec changes.",
+  "type": "module",
+  "bin": {
+    "spec-to-tests": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "generate": "tsx src/cli.ts generate",
+    "generate:petstore": "tsx src/cli.ts generate --spec https://petstore3.swagger.io/api/v3/openapi.json --out tests/generated --tags pet,store",
+    "test": "playwright test",
+    "test:unit": "node --import tsx --test \"tests/unit/*.test.ts\"",
+    "check": "tsc --noEmit && node --import tsx --test \"tests/unit/*.test.ts\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "commander": "^12.1.0",
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

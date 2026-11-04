@@ -1,0 +1,11 @@
+# Mirror of the GitHub workflow for GitLab users. Same checks, same commands.
+stages: [check]
+check:
+  stage: check
+  image: node:22
+  script:
+    - npm ci
+    - npm run check
+    - npx playwright install --with-deps chromium
+    - npx playwright test
+  artifacts: { when: always, paths: [reports/] }

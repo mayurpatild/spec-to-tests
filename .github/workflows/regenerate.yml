@@ -15,18 +15,35 @@ jobs:
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
+      - name: Check for API key
+        id: key
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::notice title=Skipped::ANTHROPIC_API_KEY is not set as a repository secret; regeneration skipped."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/checkout@v4
+        if: steps.key.outputs.present == 'true'
       - uses: actions/setup-node@v4
+        if: steps.key.outputs.present == 'true'
         with: { node-version: 22 }
       - run: npm install --no-audit --no-fund
+        if: steps.key.outputs.present == 'true'
       - name: Generate
+        if: steps.key.outputs.present == 'true'
         run: npx tsx src/cli.ts generate --spec https://petstore3.swagger.io/api/v3/openapi.json --out tests/generated --tags pet,store ${{ inputs.force && '--force' || '' }}
       - name: Typecheck generated tests
+        if: steps.key.outputs.present == 'true'
         run: npx tsc --noEmit -p tsconfig.tests.json
       - run: npx playwright install --with-deps chromium
+        if: steps.key.outputs.present == 'true'
       - name: Run
+        if: steps.key.outputs.present == 'true'
         run: npx playwright test tests/generated || true
       - name: Open PR if anything changed
+        if: steps.key.outputs.present == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           commit-message: 'chore: regenerate tests for updated Petstore spec'
